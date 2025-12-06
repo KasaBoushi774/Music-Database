@@ -6,6 +6,46 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Calendar Versioning](https://calver.org/) of
 the following form: YYYY.0M.0D.
 
+## 2025.11.23
+
+### Added
+
+- Added asserts to Song class constructor to ensure correct formatting
+
+## 2025.11.22
+
+### Added
+
+- Added comparator classes to MusicDatabaseSecondary for comparing the title, artist, and album of a song by their natural order (lexicographically), and a comparator class for comparing the length of a song by amount of seconds.
+
+- Implemented sort() method
+
+- Implemented removeEntries()
+
+- Added remove() method to iterator
+
+## 2025.11.20
+
+### Added
+
+- Added removeEntryByOrder() contract to kernel and method implementation to MusicDatabase1
+
+- Implemented getEntryByOrder(), getEntries(), and iterator with methods hasNext() and next()
+
+### Changed
+
+- Changed name of getEntryInOrder() to getEntryByOrder() to better reflect functionality and align with removeEntryByOrder()
+
+- Modified some contracts (and corresponding implementations) for better error checking and improved clarity in descriptions.
+
+## 2025.11.19
+
+### Added
+
+- Made constructors, createNewRep(), clear(), newInstance(), transferFrom(), addEntry(), removeEntry(), contains(), size()
+
+- Made MusicDatabase1.java
+
 ## 2025.11.10
 
 ### Changed

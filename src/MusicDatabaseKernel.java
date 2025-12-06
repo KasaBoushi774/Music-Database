@@ -10,15 +10,10 @@ import components.standard.Standard;
 public interface MusicDatabaseKernel
         extends Iterable<Song>, Standard<MusicDatabase> {
 
-    /*
-     * I didn't see any iterator methods in the osu components that had them, so
-     * I assume they're not needed here?
-     */
-
     /**
      * An enum for methods only intended to accept the four fields of the
      * {@code Song} class as one of their parameters (i.e. methods searching by
-     * field).
+     * field). Possible values: TITLE, ARTIST, ALBUM, LENGTH
      */
     enum SearchField {
         /**
@@ -41,26 +36,29 @@ public interface MusicDatabaseKernel
     void addEntry(Song song);
 
     /**
-     * Returns the {@code Song} at position {@code n} in the database. Returns
-     * -1 if no object exists at that position.
+     * Returns the {@code Song} at position {@code n} in the database. Throws a
+     * {@code NoSuchElementException} if there is no Song object at the
+     * position.
      *
      * @param n
      *            An int representing the index at which the user wants to fetch
      *            a value from.
      * @return A {@code Song} if one exists at {@code n}.
-     * @ensures getEntryInOrder = The {@code Song} at position {@code n} if it
-     *          exists, or -1 otherwise
+     * @requires A {@code Song} object exists at index n of this
+     * @ensures getEntryByOrder = The {@code Song} at position {@code n} if it
+     *          exists
      */
-    Song getEntryInOrder(int n);
+    Song getEntryByOrder(int n);
 
     /**
-     * A method that takes an enum (which can be "title", "artist", "album", or
-     * "length"), and a value to use to find matches within the {@code Song}
+     * A method that takes an enum (which can be TITLE, ARTIST, ALBUM, or
+     * LENGTH), and a value to use to find matches within the {@code Song}
      * objects of the database. It then returns an {@code ArrayList} of all
      * matches found.
      *
      * @param field
-     *            An enum representing the {@code Song} field to search through
+     *            An enum (possible values: TITLE, ARTIST, ALBUM, LENGTH)
+     *            representing the {@code Song} field to search through
      * @param value
      *            A string value to search by
      * @return An {@code ArrayList} of all {@code Songs} with a field matching
@@ -96,12 +94,25 @@ public interface MusicDatabaseKernel
      * @param song
      *            A {@code Song} object to be searched for and removed, then
      *            returned.
-     * @return An {@code ArrayList} of all {@code Songs} removed.
+     * @return The {@code Song} removed.
      * @requires {@code song} is in this
      * @ensures this = #this / song
      * @updates this
      */
     Song removeEntry(Song song);
+
+    /**
+     * Takes in an index and removes the {@code Song} there from the database.
+     * Returns an error if no entry exists at n.
+     *
+     * @param n
+     *            The index of a song to be removed
+     * @return The {@code Song} removed.
+     * @requires An entry exists at n.
+     * @ensures this = #this / [song at n]
+     * @updates this
+     */
+    Song removeEntryByOrder(int n);
 
     /**
      * A method that takes in a Song object and checks for a match in the
@@ -110,7 +121,7 @@ public interface MusicDatabaseKernel
      * @param song
      *            A {@code Song} object to be searched for
      * @return A boolean
-     * @ensures contains == true if {@code song} is in this
+     * @ensures contains = true if {@code song} is in this
      */
     Boolean contains(Song song);
 
@@ -118,7 +129,7 @@ public interface MusicDatabaseKernel
      * Returns the number of songs in the database.
      *
      * @return the number of songs in the database.
-     * @ensures size = this.length
+     * @ensures size = this.size
      */
     int size();
 

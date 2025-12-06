@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * Layered implementation of secondary methods for {@code MusicDatabase}.
@@ -251,7 +252,7 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
                 out("* Album: " + song.album());
             }
             out("* Length: " + song.length());
-            out("********************");
+            out("******************************");
         }
     }
 
@@ -324,5 +325,86 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
      */
     public int equals(MusicDatabase db) {
         return (this.toString().compareTo(db.toString()));
+    }
+
+    /*
+     * ------------------------- Comparator Classes ----------------------------
+     */
+
+    /**
+     * A comparator subclass that compares song objects lexicographically based
+     * on their title fields.
+     */
+    public static class TitleComparator implements Comparator<Song> {
+
+        // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
+        @Override
+        public int compare(Song song1, Song song2) {
+            return song1.title().compareToIgnoreCase(song2.title());
+        }
+    }
+
+    /**
+     * A comparator subclass that compares song objects lexicographically based
+     * on their artist fields.
+     */
+    public static class ArtistComparator implements Comparator<Song> {
+
+        // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
+        @Override
+        public int compare(Song song1, Song song2) {
+            return song1.artist().compareToIgnoreCase(song2.artist());
+        }
+    }
+
+    /**
+     * A comparator subclass that compares song objects lexicographically based
+     * on their album fields.
+     */
+    public static class AlbumComparator implements Comparator<Song> {
+
+        // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
+        @Override
+        public int compare(Song song1, Song song2) {
+            return song1.album().compareToIgnoreCase(song2.album());
+        }
+    }
+
+    /**
+     * A comparator subclass that compares song objects based on their length in
+     * seconds.
+     */
+    public static class LengthComparator implements Comparator<Song> {
+
+        // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
+        @Override
+        public int compare(Song song1, Song song2) {
+            final double sixty = 60;
+
+            /*
+             * Splits the length of the song into different parts by the colons
+             * in it (2 parts if the length is minutes and seconds, 3 parts if
+             * the song is hours, minutes, and seconds). Then adds the seconds,
+             * minutes*60, and hours*60*60 to the total in a loop to get the
+             * total seconds.
+             */
+            String[] song1Split = song1.length().split(":");
+            int total1 = 0;
+            for (int i = 0; i < song1Split.length; i++) {
+                total1 += Integer
+                        .parseInt(song1Split[song1Split.length - 1 - i])
+                        * Math.pow(sixty, (double) i);
+            }
+
+            String[] song2Split = song2.length().split(":");
+            int total2 = 0;
+            for (int i = 0; i < song2Split.length; i++) {
+                total2 += Integer
+                        .parseInt(song2Split[song2Split.length - 1 - i])
+                        * Math.pow(sixty, (double) i);
+            }
+
+            return Integer.compare(total1, total2);
+        }
     }
 }
