@@ -204,16 +204,38 @@ public abstract class MusicDatabaseTest {
     }
 
     /**
-     * Test of newInstance. UNFINISHED
+     * Test of newInstance.
      */
     @Test
     public void newInstanceTest() {
         MusicDatabase db1 = this.createFromArgsTest();
-        MusicDatabase db2 = this.createFromArgsTest();
+        MusicDatabase db2 = db1.newInstance();
 
-        db1.clear();
+        assertEquals(true, db2 instanceof MusicDatabase1);
+    }
 
+    /**
+     * Test of transferFrom.
+     */
+    @Test
+    public void transferFromTest() {
+        /* Initialize db1 and load data from FILE1 into it */
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE1);
+
+        /* Make a copy of it in db2, then test for equality between them */
+        MusicDatabase db2 = db1.newInstance();
+        db2.append(db1);
         assertEquals(true, db1.equals(db2));
+
+        /*
+         * Make a new object, db3, then transfer db2's data into it and compare
+         * it to db1 for equality. If db1 and db2 are equal, db1 and db3 should
+         * be equal after transferFrom
+         */
+        MusicDatabase db3 = db1.newInstance();
+        db3.transferFrom(db2);
+        assertEquals(true, db1.equals(db3));
     }
 
 }
