@@ -1,3 +1,5 @@
+package components.musicdatabase;
+
 /**
  * A record class meant to hold song data. Parameters are self explanatory.
  *

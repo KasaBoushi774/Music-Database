@@ -1,3 +1,5 @@
+package components.musicdatabase;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -131,6 +133,14 @@ public class MusicDatabase1 extends MusicDatabaseSecondary {
         MusicDatabase1 temp = (MusicDatabase1) source;
         this.db = temp.db;
         temp.createNewRep(DEFAULT_SIZE);
+    }
+
+    // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
+    @Override
+    public void ensureCapacity(int cap) {
+        assert cap > 0 : "Violation of: cap > 0";
+
+        this.db.ensureCapacity(cap);
     }
 
     // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN

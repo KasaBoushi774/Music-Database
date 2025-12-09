@@ -1,3 +1,5 @@
+package components.musicdatabase;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -305,26 +307,24 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
     // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(this.size());
-        for (Song song : this) {
-            result.append(String.format("%s\t%s\t%s\t%s\n", song.title(),
-                    song.artist(), song.album(), song.length()));
+        String result = "";
+        if (this.size() > 0) {
+            StringBuilder strDB = new StringBuilder(this.size());
+            for (Song song : this) {
+                strDB.append(
+                        String.format("%s    %s    %s    %s\n", song.title(),
+                                song.artist(), song.album(), song.length()));
+            }
+            result = strDB.toString();
         }
 
-        return result.toString();
+        return result;
     }
 
-    /**
-     * Checks this and db for equality by comparing their string representations
-     * lexicographically.
-     *
-     * @param db
-     * @return an int representing how this and db compare to each other
-     * @ensures If this < db, equals < 0; If this > db, equals > 0; If this ==
-     *          db, equals == 0
-     */
-    public int equals(MusicDatabase db) {
-        return (this.toString().compareTo(db.toString()));
+    // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
+    @Override
+    public Boolean equals(MusicDatabase db) {
+        return (this.toString().equals(db.toString()));
     }
 
     /*

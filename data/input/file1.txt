@@ -1,4 +1,4 @@
 Title	Artist	Album	Length
-AWAKE	Hoshimachi Suisei	Shinsei Mokuroku	3:14
-Bye Bye Rainy	Hoshimachi Suisei		3:20
-Kingworld	Shirakami Fubuki		3:30
+AWAKE	Hoshimachi Suisei	Shinsei Mokuroku	03:14
+Bye Bye Rainy	Hoshimachi Suisei		03:20
+KINGWORLD	Shirakami Fubuki		03:30

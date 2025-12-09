@@ -1,3 +1,5 @@
+package components.musicdatabase;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -21,6 +23,18 @@ public interface MusicDatabaseKernel
          */
         TITLE, ARTIST, LENGTH, ALBUM
     }
+
+    /**
+     * This method calls the {@code ArrayList} method of the same name to ensure
+     * that the {@code ArrayList} underlying the MusicDatabase has a certain
+     * capacity
+     *
+     * @param cap
+     *            An int representing minimum capacity.
+     * @requires cap > 0
+     * @ensures [The minimum size of underlying {@code ArrayList} of this = cap]
+     */
+    void ensureCapacity(int cap);
 
     /**
      * Adds a {@code Song} object to the database if a duplicate does not
