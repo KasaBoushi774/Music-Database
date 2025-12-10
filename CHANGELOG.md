@@ -10,7 +10,7 @@ the following form: YYYY.0M.0D.
 
 ### Added
 
-- transferFrom and newInstance test
+- Added transferFrom, newInstance, addEntry tests
 
 ## 2025.12.08
 

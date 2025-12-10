@@ -238,4 +238,31 @@ public abstract class MusicDatabaseTest {
         assertEquals(true, db1.equals(db3));
     }
 
+    /**
+     * Test of addEntry.
+     */
+    @Test
+    public void addEntryTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE1);
+        Song song = new Song("Title", "Artist", "Album", "00:00");
+
+        db1.addEntry(song);
+
+        assertEquals(song, db1.getEntryByOrder(db1.size() - 1));
+    }
+
+    /**
+     * Test of addEntry on empty db.
+     */
+    @Test
+    public void addEntryWhenEmptyTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        Song song = new Song("Title", "Artist", "Album", "00:00");
+
+        db1.addEntry(song);
+
+        assertEquals(song, db1.getEntryByOrder(0));
+    }
+
 }
