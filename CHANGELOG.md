@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Calendar Versioning](https://calver.org/) of
 the following form: YYYY.0M.0D.
 
+## 2025.12.10
+
+### Added
+
+- Added getEntryByOrder, getEntries, removeEntries, removeEntry, removeEntryByOrder, contains, size, sort (for all four comparators), readFromFile, writeToFile, split, append, addEntries, toString, equals tests
+
+## 2025.12.09
+
+### Added
+
+- Added transferFrom, newInstance, addEntry tests
+
+## 2025.12.08
+
+### Added
+
+- Added tests for no-arg constructor, arg constructor, iterator hasNext, iterator next, iterator remove, and clear.
+
+- Added ensureCapacity() method to kernel
+
+### Changed
+
+- Changed equals() method to correctly return a boolean rather than an int
+
+- Modified file structure to be better organized
+
 ## 2025.11.23
 
 ### Added

@@ -1,3 +1,5 @@
+package components.musicdatabase;
+
 import java.util.ArrayList;
 
 /**
@@ -108,4 +110,14 @@ public interface MusicDatabase extends MusicDatabaseKernel {
      * @updates this
      */
     void addEntries(ArrayList<Song> songs);
+
+    /**
+     * Checks this and db for equality by comparing their string representations
+     * lexicographically.
+     *
+     * @param db
+     * @return true if this and db are equal
+     * @ensures equals = true if this = db
+     */
+    Boolean equals(MusicDatabase db);
 }

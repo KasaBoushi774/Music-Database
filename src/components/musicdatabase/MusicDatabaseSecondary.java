@@ -1,3 +1,5 @@
+package components.musicdatabase;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,15 +31,15 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
     }
 
     /**
-     * Throws an exception and prints an error message if the given line is not
-     * a valid header.
+     * Throws an IllegalArgumentException and prints an error message if the
+     * given line is not a valid header. Used in readFromFile().
      *
      * @param line
      *            A line of text from a tab delimited file
      * @ensures isValidHeader throws an exception if line is a valid header in
      *          the format "Title\tArtist\tAlbum\tLength".
      */
-    private static void isValidHeader(String line) {
+    public static void isValidHeader(String line) {
         if (!line.equals("Title\tArtist\tAlbum\tLength")) {
             throw new IllegalArgumentException(
                     "ERROR: Header is incorrectly formatted. "
@@ -50,7 +52,7 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
     /**
      * Throws an exception if the given line of data is not properly formatted.
      * See the ensures tag for details. Also prints the number of the row
-     * currently being checked.
+     * currently being checked. Used in readFromFile().
      *
      * @param line
      *            A line of text
@@ -63,7 +65,7 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
      *          or an empty string 4. If the fourth value in the line (length)
      *          is null or an empty string
      */
-    private static void isValidDataRow(String line, int rowNum) {
+    public static void isValidDataRow(String line, int rowNum) {
         /*
          * Splits line along any tabs, including empty strings.
          */
@@ -100,15 +102,15 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
     }
 
     /**
-     * Throws an exception and prints an error message if the file at the given
-     * file path is not a .txt file.
+     * Throws an IllegalArgumentException and prints an error message if the
+     * file at the given file path is not a .txt file. Used in readFromFile().
      *
      * @param filePath
      *            The path to a file.
      * @requires filePath != null
      * @ensures isTxt = Whether the file at the given path is a text/plain file
      */
-    private static void isTxt(String filePath) {
+    public static void isTxt(String filePath) {
         assert filePath != null : "Violation of: filePath != null";
 
         try {
@@ -305,26 +307,24 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
     // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(this.size());
-        for (Song song : this) {
-            result.append(String.format("%s\t%s\t%s\t%s\n", song.title(),
-                    song.artist(), song.album(), song.length()));
+        String result = "";
+        if (this.size() > 0) {
+            StringBuilder strDB = new StringBuilder(this.size());
+            for (Song song : this) {
+                strDB.append(
+                        String.format("%s    %s    %s    %s\n", song.title(),
+                                song.artist(), song.album(), song.length()));
+            }
+            result = strDB.toString();
         }
 
-        return result.toString();
+        return result;
     }
 
-    /**
-     * Checks this and db for equality by comparing their string representations
-     * lexicographically.
-     *
-     * @param db
-     * @return an int representing how this and db compare to each other
-     * @ensures If this < db, equals < 0; If this > db, equals > 0; If this ==
-     *          db, equals == 0
-     */
-    public int equals(MusicDatabase db) {
-        return (this.toString().compareTo(db.toString()));
+    // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
+    @Override
+    public Boolean equals(MusicDatabase db) {
+        return (this.toString().equals(db.toString()));
     }
 
     /*
@@ -359,20 +359,32 @@ public abstract class MusicDatabaseSecondary implements MusicDatabase {
 
     /**
      * A comparator subclass that compares song objects lexicographically based
-     * on their album fields.
+     * on their album fields. If the album of one song is blank, the other is
+     * considered "greater". If both are blank or have the same album then their
+     * titles are compared instead, and if both are non-blank they are compared
+     * normally.
      */
     public static class AlbumComparator implements Comparator<Song> {
 
         // CHECKSTYLE: ALLOW THIS METHOD TO BE OVERRIDDEN
         @Override
         public int compare(Song song1, Song song2) {
-            return song1.album().compareToIgnoreCase(song2.album());
+            if (song2.album() == "") {
+                return 1;
+            } else if (song1.album() == "") {
+                return -1;
+            } else if (song1.album() == "" && song2.album() == ""
+                    || song1.album().equals(song2.album())) {
+                return song1.title().compareToIgnoreCase(song2.title());
+            } else {
+                return song1.album().compareToIgnoreCase(song2.album());
+            }
         }
     }
 
     /**
      * A comparator subclass that compares song objects based on their length in
-     * seconds.
+     * seconds. The shortest songs will come first.
      */
     public static class LengthComparator implements Comparator<Song> {
 
