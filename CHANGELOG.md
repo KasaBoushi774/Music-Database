@@ -10,7 +10,7 @@ the following form: YYYY.0M.0D.
 
 ### Added
 
-- Added getEntryByOrder, getEntries, removeEntries, removeEntry, removeEntryByOrder, contains, size, sort (for all four comparators) tests
+- Added getEntryByOrder, getEntries, removeEntries, removeEntry, removeEntryByOrder, contains, size, sort (for all four comparators), readFromFile, writeToFile, split, append, addEntries, toString, equals tests
 
 ## 2025.12.09
 
