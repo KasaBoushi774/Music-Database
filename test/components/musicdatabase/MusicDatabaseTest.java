@@ -616,4 +616,143 @@ public abstract class MusicDatabaseTest {
 
         assertEquals(true, db1.equals(db2));
     }
+
+    /**
+     * Test of split when no matches are found.
+     */
+    @Test
+    public void splitNoMatchesTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE1);
+        MusicDatabase db2 = db1.newInstance();
+        db2.append(db1);
+
+        MusicDatabase db3 = db1.split(SearchField.TITLE, "E");
+
+        assertEquals(true, db1.equals(db2));
+        assertEquals(0, db3.size());
+    }
+
+    /**
+     * Test of split.
+     */
+    @Test
+    public void splitTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        MusicDatabase db2 = db1.split(SearchField.ARTIST, "Hoshimachi Suisei");
+
+        Song song1 = new Song("Bye Bye Rainy", "Hoshimachi Suisei", "",
+                "03:20");
+        Song song2 = new Song("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku",
+                "03:14");
+
+        assertEquals(true, db2.contains(song1));
+        assertEquals(true, db2.contains(song2));
+        assertEquals(false, db1.contains(song1));
+        assertEquals(false, db1.contains(song2));
+        assertEquals(2, db2.size());
+    }
+
+    /**
+     * Test of equality after appending.
+     */
+    @Test
+    public void appendEqualityTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        MusicDatabase db2 = db1.newInstance();
+        db2.append(db1);
+
+        assertEquals(true, db1.equals(db2));
+    }
+
+    /**
+     * Test of equality after appending one db to another with overlap in the
+     * data they contain.
+     */
+    @Test
+    public void appendEqualityOverlapTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        /*
+         * Due to the nature of append, even if db2 already contains some songs
+         * in db1, appending db1 to db2 should not add duplicates.
+         */
+        MusicDatabase db2 = db1.newInstance();
+        db2.readFromFile(FILE1);
+        db2.append(db1);
+
+        assertEquals(true, db1.equals(db2));
+    }
+
+    /**
+     * Test of equality after addEntries.
+     */
+    @Test
+    public void addEntriesEqualityTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        Song song1 = new Song("Bye Bye Rainy", "Hoshimachi Suisei", "",
+                "03:20");
+        Song song2 = new Song("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku",
+                "03:14");
+        db1.addEntry(song1);
+        db1.addEntry(song2);
+
+        ArrayList<Song> entries = new ArrayList<Song>();
+        entries.add(song1);
+        entries.add(song2);
+
+        MusicDatabase db2 = db1.newInstance();
+        db2.addEntries(entries);
+
+        assertEquals(true, db1.equals(db2));
+        assertEquals(2, db2.size());
+    }
+
+    /**
+     * Test of toString.
+     */
+    @Test
+    public void toStringTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        Song song1 = new Song("Bye Bye Rainy", "Hoshimachi Suisei", "",
+                "03:20");
+        Song song2 = new Song("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku",
+                "03:14");
+        db1.addEntry(song1);
+        db1.addEntry(song2);
+
+        String expected = "Bye Bye Rainy    Hoshimachi Suisei        03:20\n"
+                + "AWAKE    Hoshimachi Suisei    Shinsei Mokuroku    03:14\n";
+
+        String str = db1.toString();
+
+        assertEquals(expected, str);
+    }
+
+    /**
+     * Test of equals.
+     */
+    @Test
+    public void equalsTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE1);
+
+        MusicDatabase db2 = this.createFromArgsTest();
+        db2.readFromFile(FILE1);
+
+        assertEquals(true, db1 instanceof MusicDatabase1);
+        assertEquals(true, db2 instanceof MusicDatabase1);
+
+        for (int i = 0; i < db1.size(); i++) {
+            assertEquals(true,
+                    db1.getEntryByOrder(i).equals(db2.getEntryByOrder(i)));
+        }
+
+        assertEquals(true, db1.equals(db2));
+    }
 }

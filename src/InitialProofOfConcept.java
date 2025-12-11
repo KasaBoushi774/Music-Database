@@ -6,7 +6,7 @@ import java.util.Comparator;
  * A class with some implementations of musicPlaylist methods meant to show
  * viability of the design.
  */
-public class MusicDatabaseProofOfConcept {
+public class InitialProofOfConcept {
 
     /**
      * An internal class containing song data, with methods to set and get
@@ -192,7 +192,7 @@ public class MusicDatabaseProofOfConcept {
     /**
      * No argument constructor.
      */
-    public MusicDatabaseProofOfConcept() {
+    public InitialProofOfConcept() {
         this.songs = new ArrayList<Song>();
     }
 
@@ -349,7 +349,7 @@ public class MusicDatabaseProofOfConcept {
          * modified slightly to work properly. Right now it would produce
          * incorrect output.
          */
-        MusicDatabaseProofOfConcept db = new MusicDatabaseProofOfConcept();
+        InitialProofOfConcept db = new InitialProofOfConcept();
 
         db.addEntry("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku", "3:18");
 
