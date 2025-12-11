@@ -27,7 +27,7 @@ public interface MusicDatabaseKernel
     /**
      * This method calls the {@code ArrayList} method of the same name to ensure
      * that the {@code ArrayList} underlying the MusicDatabase has a certain
-     * capacity
+     * capacity.
      *
      * @param cap
      *            An int representing minimum capacity.

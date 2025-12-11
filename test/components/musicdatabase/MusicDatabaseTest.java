@@ -1,10 +1,16 @@
 package components.musicdatabase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.junit.Test;
+
+import components.musicdatabase.MusicDatabaseKernel.SearchField;
 
 /**
  * JUnit test fixture for {@code MusicDatabase}'s constructor and kernel
@@ -19,6 +25,27 @@ public abstract class MusicDatabaseTest {
      * File 1 for testing, containing a few lines of data.
      */
     private static final String FILE1 = "data\\input\\file1.txt";
+
+    /**
+     * File 2 for testing, containing many lines data.
+     */
+    private static final String FILE2 = "data\\input\\FILE2.txt";
+
+    /**
+     * File 2 but with no header.
+     */
+    private static final String FILE2_NOHEADER = "data\\input\\FILE2 No Header.txt";
+
+    /**
+     * File 2 but with mixed up data columns.
+     */
+    private static final String FILE2_MIXEDCOLUMNS = "data\\input\\"
+            + "FILE2 Mixed Columns.txt";
+
+    /**
+     * An image used for testing the isTxt method.
+     */
+    private static final String TESTIMAGE = "data\\input\\sorry bro.jpg";
 
     /**
      * Invokes the appropriate {@code MusicDatabase} constructor for the
@@ -265,4 +292,356 @@ public abstract class MusicDatabaseTest {
         assertEquals(song, db1.getEntryByOrder(0));
     }
 
+    /**
+     * Test of getEntryByOrder.
+     */
+    @Test
+    public void getEntryByOrderTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        Song song1 = new Song("Title", "Artist", "Album", "00:00");
+        db1.addEntry(song1);
+        Song song2 = new Song("Title1", "Artist5", "Album3", "10:10");
+        db1.addEntry(song2);
+
+        assertEquals(song1, db1.getEntryByOrder(0));
+        assertEquals(song2, db1.getEntryByOrder(1));
+    }
+
+    /**
+     * Test of getEntries using the ARTIST field.
+     */
+    @Test
+    public void getEntriesArtistTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        ArrayList<Song> retrieved = db1.getEntries(SearchField.ARTIST,
+                "Hoshimachi Suisei");
+
+        /*
+         * When searching in the ARTIST field with Hoshimachi Suisei, the two
+         * songs put into the ArrayList below should be in the returned
+         * ArrayList as well.
+         */
+        ArrayList<Song> expected = new ArrayList<Song>(2);
+        expected.add(new Song("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku",
+                "03:14"));
+        expected.add(
+                new Song("Bye Bye Rainy", "Hoshimachi Suisei", "", "03:20"));
+
+        assertEquals(expected, retrieved);
+    }
+
+    /**
+     * Test of getEntries using the ALBUM field.
+     */
+    @Test
+    public void getEntriesAlbumTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        ArrayList<Song> retrieved = db1.getEntries(SearchField.ALBUM,
+                "I'll put you in misery");
+
+        /*
+         * When searching in the ALBUM field with "I'll put you in misery", the
+         * two songs put into the ArrayList below should be in the returned
+         * ArrayList as well.
+         */
+        ArrayList<Song> expected = new ArrayList<Song>(2);
+        expected.add(new Song("To bask in the rain", "TUYU",
+                "I'll put you in misery", "03:19"));
+        expected.add(new Song("Loser Girl", "TUYU", "I'll put you in misery",
+                "03:18"));
+
+        assertEquals(expected, retrieved);
+    }
+
+    /**
+     * Test of removeEntries using the ALBUM field.
+     */
+    @Test
+    public void removeEntriesAlbumTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        ArrayList<Song> retrieved = db1.removeEntries(SearchField.ALBUM,
+                "I'll put you in misery");
+
+        /*
+         * When calling removeEntries using the ALBUM field with
+         * "I'll put you in misery", the two songs put into the ArrayList below
+         * should be in the returned ArrayList and not in db1 after the call.
+         */
+        ArrayList<Song> expected = new ArrayList<Song>(2);
+        Song song1 = new Song("To bask in the rain", "TUYU",
+                "I'll put you in misery", "03:19");
+        expected.add(song1);
+        Song song2 = new Song("Loser Girl", "TUYU", "I'll put you in misery",
+                "03:18");
+        expected.add(song2);
+
+        assertEquals(expected, retrieved);
+        assertEquals(false, db1.contains(song1));
+        assertEquals(false, db1.contains(song2));
+    }
+
+    /**
+     * Test of removeEntries when the given parameters don't match anything in
+     * the db, and therefore nothing is removed.
+     */
+    @Test
+    public void removeEntriesNothingToRemoveTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        MusicDatabase db2 = db1.newInstance();
+        db2.append(db1);
+
+        ArrayList<Song> retrieved = db1.removeEntries(SearchField.ALBUM,
+                "Some random album");
+
+        assertEquals(0, retrieved.size());
+        assertEquals(true, db1.equals(db2));
+    }
+
+    /**
+     * Test of removeEntry.
+     */
+    @Test
+    public void removeEntryTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        Song song = new Song("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku",
+                "03:14");
+
+        Song retrieved = db1.removeEntry(song);
+
+        assertEquals(song, retrieved);
+        assertEquals(false, db1.contains(song));
+    }
+
+    /**
+     * Test of removeEntryByOrder.
+     */
+    @Test
+    public void removeEntryByOrderTest() {
+        final int three = 3;
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        Song song = new Song("UNDEAD", "YOASOBI", "", "03:03");
+
+        Song retrieved = db1.removeEntryByOrder(three);
+
+        assertEquals(song, retrieved);
+        assertEquals(false, db1.contains(song));
+    }
+
+    /**
+     * Test of contains.
+     */
+    @Test
+    public void containsTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        Song song = new Song("UNDEAD", "YOASOBI", "", "03:03");
+
+        assertEquals(true, db1.contains(song));
+    }
+
+    /**
+     * Test of contains with the same object that was added.
+     */
+    @Test
+    public void containsAfterAddingTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        Song song = new Song("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku",
+                "03:14");
+        db1.addEntry(song);
+
+        assertEquals(true, db1.contains(song));
+    }
+
+    /**
+     * Test of contains when object is not in the db.
+     */
+    @Test
+    public void containsWhenNotInTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+
+        Song song = new Song("UNDEAD", "YOASOBI", "", "03:03");
+
+        assertEquals(false, db1.contains(song));
+    }
+
+    /**
+     * Test of size when it is one.
+     */
+    @Test
+    public void sizeWhenOneTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        Song song = new Song("UNDEAD", "YOASOBI", "", "03:03");
+        db1.addEntry(song);
+
+        assertEquals(1, db1.size());
+    }
+
+    /**
+     * Test of size when it is zero.
+     */
+    @Test
+    public void sizeWhenZeroTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+
+        assertEquals(0, db1.size());
+    }
+
+    /**
+     * Test of size when it is many.
+     */
+    @Test
+    public void sizeTest() {
+        final int eight = 8;
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+
+        assertEquals(eight, db1.size());
+    }
+
+    /**
+     * Test of sort with TitleComparator.
+     */
+    @Test
+    public void sortWithTitleCompTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+        db1.sort(new MusicDatabaseSecondary.TitleComparator());
+
+        /*
+         * If sorting by title lexicographically, these two songs should be
+         * first and last, respectively.
+         */
+        Song first = new Song("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku",
+                "03:14");
+        Song last = new Song("UNDEAD", "YOASOBI", "", "03:03");
+
+        assertEquals(first, db1.getEntryByOrder(0));
+        assertEquals(last, db1.getEntryByOrder(db1.size() - 1));
+    }
+
+    /**
+     * Test of sort with ArtistComparator.
+     */
+    @Test
+    public void sortWithArtistCompTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+        db1.sort(new MusicDatabaseSecondary.ArtistComparator());
+
+        /*
+         * If sorting by artist lexicographically, these two songs should be
+         * first and last, respectively.
+         */
+        Song first = new Song("Kairikou (2025 Arrange ver.)", "Aitsuki Nakuru",
+                "Shinsou", "04:42");
+        Song last = new Song("UNDEAD", "YOASOBI", "", "03:03");
+
+        assertEquals(first, db1.getEntryByOrder(0));
+        assertEquals(last, db1.getEntryByOrder(db1.size() - 1));
+    }
+
+    /**
+     * Test of sort with AlbumComparator.
+     */
+    @Test
+    public void sortWithAlbumCompTest() {
+        final int four = 4;
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+        db1.sort(new MusicDatabaseSecondary.AlbumComparator());
+
+        /*
+         * If sorting by album lexicographically, these two songs should be
+         * first and last, respectively.
+         */
+        Song first = new Song("Loser Girl", "TUYU", "I'll put you in misery",
+                "03:18");
+        Song last = new Song("Kairikou (2025 Arrange ver.)", "Aitsuki Nakuru",
+                "Shinsou", "04:42");
+
+        assertEquals(first, db1.getEntryByOrder(four));
+        assertEquals(last, db1.getEntryByOrder(db1.size() - 1));
+    }
+
+    /**
+     * Test of sort with LengthComparator.
+     */
+    @Test
+    public void sortWithLengthCompTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE2);
+        db1.sort(new MusicDatabaseSecondary.LengthComparator());
+
+        /*
+         * If sorting numerically by length in seconds, these two songs should
+         * be first and last, respectively.
+         */
+        Song first = new Song("UNDEAD", "YOASOBI", "", "03:03");
+        Song last = new Song("Kairikou (2025 Arrange ver.)", "Aitsuki Nakuru",
+                "Shinsou", "04:42");
+
+        assertEquals(first, db1.getEntryByOrder(0));
+        assertEquals(last, db1.getEntryByOrder(db1.size() - 1));
+    }
+
+    /**
+     * Test of readFromFile.
+     */
+    @Test
+    public void readFromFileTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        db1.readFromFile(FILE1);
+
+        /* When reading from FILE1, db1 should have all of these Song objects */
+        Song first = new Song("AWAKE", "Hoshimachi Suisei", "Shinsei Mokuroku",
+                "03:14");
+        Song second = new Song("Bye Bye Rainy", "Hoshimachi Suisei", "",
+                "03:20");
+        Song third = new Song("KINGWORLD", "Shirakami Fubuki", "", "03:30");
+
+        assertEquals(first, db1.getEntryByOrder(0));
+        assertEquals(second, db1.getEntryByOrder(1));
+        assertEquals(third, db1.getEntryByOrder(2));
+    }
+
+    /**
+     * Test of isTxt (utility method use in readFromFile) throwing an error when
+     * the file is not a .txt.
+     */
+    @Test
+    public void isValidTxtTest() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            MusicDatabaseSecondary.isTxt(TESTIMAGE);
+        });
+    }
+
+    /**
+     * Test of isValidHeader (utility method use in readFromFile) throwing an
+     * error when there is an invalid header.
+     */
+    @Test
+    public void isValidHeaderTest() {
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            BufferedReader rdr = new BufferedReader(
+                    new FileReader(FILE2_NOHEADER));
+
+            String firstLine = rdr.readLine();
+            rdr.close();
+            MusicDatabaseSecondary.isValidHeader(firstLine);
+        });
+    }
 }
