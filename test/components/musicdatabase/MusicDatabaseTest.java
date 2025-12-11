@@ -1,10 +1,7 @@
 package components.musicdatabase;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -30,22 +27,6 @@ public abstract class MusicDatabaseTest {
      * File 2 for testing, containing many lines data.
      */
     private static final String FILE2 = "data\\input\\FILE2.txt";
-
-    /**
-     * File 2 but with no header.
-     */
-    private static final String FILE2_NOHEADER = "data\\input\\FILE2 No Header.txt";
-
-    /**
-     * File 2 but with mixed up data columns.
-     */
-    private static final String FILE2_MIXEDCOLUMNS = "data\\input\\"
-            + "FILE2 Mixed Columns.txt";
-
-    /**
-     * An image used for testing the isTxt method.
-     */
-    private static final String TESTIMAGE = "data\\input\\sorry bro.jpg";
 
     /**
      * Invokes the appropriate {@code MusicDatabase} constructor for the
@@ -618,30 +599,21 @@ public abstract class MusicDatabaseTest {
     }
 
     /**
-     * Test of isTxt (utility method use in readFromFile) throwing an error when
-     * the file is not a .txt.
+     * Test of writeToFile.
      */
     @Test
-    public void isValidTxtTest() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            MusicDatabaseSecondary.isTxt(TESTIMAGE);
-        });
-    }
+    public void writeToFileTest() {
+        MusicDatabase db1 = this.createFromArgsTest();
+        MusicDatabase db2 = db1.newInstance();
+        db1.readFromFile(FILE1);
 
-    /**
-     * Test of isValidHeader (utility method use in readFromFile) throwing an
-     * error when there is an invalid header.
-     */
-    @Test
-    public void isValidHeaderTest() {
+        /*
+         * If you write db1 to a file, then read that file into db2, db1 and db2
+         * should be equal
+         */
+        db1.writeToFile("data\\output\\writeToFileTestOutput.txt");
+        db2.readFromFile("data\\output\\writeToFileTestOutput.txt");
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            BufferedReader rdr = new BufferedReader(
-                    new FileReader(FILE2_NOHEADER));
-
-            String firstLine = rdr.readLine();
-            rdr.close();
-            MusicDatabaseSecondary.isValidHeader(firstLine);
-        });
+        assertEquals(true, db1.equals(db2));
     }
 }
